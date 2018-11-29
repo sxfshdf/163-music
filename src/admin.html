@@ -5,32 +5,62 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>管理页面</title>
-
-  <style>
-    *{margin: 0; padding: 0;}
-    #yyy{
-      padding: 40px 50px;
-      border: 1px dashed #ddd;
-      width: 300px;
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-direction: column;
-    }
-    #file{
-      font-size: 14px;
-      color: #999;
-    }
-  </style>
+  <link rel="stylesheet" href="./default.css">
 </head>
 
 <body>
-  <div id="yyy">
-    <span id="xxx">点击或拖曳上传</span>
-    <span id="file">（文件大小不超过40MB）</span>
+  <div class="page">
+    <aside>
+      <div class="newSong">
+        新建歌曲
+      </div>
+      <ul class="songList">
+        <li>歌曲1</li>
+        <li class="active">歌曲2</li>
+        <li>歌曲3</li>
+        <li>歌曲4</li>
+        <li>歌曲5</li>
+        <li>歌曲6</li>
+        <li>歌曲7</li>
+        <li>歌曲8</li>
+        <li>歌曲9</li>
+        <li>歌曲10</li>
+      </ul>
+      <div class="uploadArea">
+        <div id="uploadContainer" class="drag">
+          <div id="uploadButton" class="click">
+            <span>点击或拖曳上传</span>
+            <span class="file">（文件大小不超过40MB）</span>
+          </div>
+        </div>
+        <div id="uploadStatus"></div>
+      </div>
+    </aside>
+    <main>
+      <form>
+        <div class="raw">
+          <label>歌名
+              <input type="text">
+          </label>
+        </div>
+        <div class="raw">
+            <label>歌手
+                <input type="text">
+            </label>
+          </div>
+          <div class="raw">
+              <label>外链
+                  <input type="text">
+              </label>
+            </div><div class="raw">
+                <button type="submit">保存</button>
+              </div>
+      </form>
+    </main>
   </div>
-  <div id="uploadStatus"></div>
+
+
+
 
   <script src="../node_modules/leancloud-storage/dist/av-min.js"></script>
   <script>
@@ -48,13 +78,13 @@
   <script>
     var uploader = Qiniu.uploader({
       runtimes: 'html5',    //上传模式,依次退化
-      browse_button: 'xxx',       //上传选择的点选按钮，**必需**
+      browse_button: 'uploadButton',       //上传选择的点选按钮，**必需**
       uptoken_url: 'http://localhost:8888/uptoken',
       domain: 'piwencfxw.bkt.clouddn.com',   //bucket 域名，下载资源时用到，**必需**
       get_new_uptoken: false,  //设置上传文件的时候是否每次都重新获取新的token
       max_file_size: '40mb',           //最大文件体积限制
       dragdrop: true,                   //开启可拖曳上传
-      drop_element: 'yyy',        //拖曳上传区域元素的ID，拖曳文件或文件夹后可触发上传
+      drop_element: 'uploadContainer',        //拖曳上传区域元素的ID，拖曳文件或文件夹后可触发上传
       auto_start: true,                 //选择文件后自动上传，若关闭需要自己绑定事件触发上传
       init: {
         'FilesAdded': function (up, files) {
@@ -81,7 +111,7 @@
 
           var domain = up.getOption('domain')
           var response = JSON.parse(info.response)
-          var sourceLink = 'http://'+ domain + '/' + encodeURIComponent(response.key) //获取上传成功后的文件的Url
+          var sourceLink = 'http://' + domain + '/' + encodeURIComponent(response.key) //获取上传成功后的文件的Url
           console.log(sourceLink)
         },
         'Error': function (up, err, errTip) {
