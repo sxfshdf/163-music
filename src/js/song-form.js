@@ -74,16 +74,20 @@
       this.model = model
       this.bindEvents()
       this.view.render(this.model.data)
-      window.eventHub.on('upload', (data) => {
-        this.model.data = data
-        this.view.render(this.model.data)
-      })
+      // window.eventHub.on('upload', (data) => {
+      //   this.model.data = data
+      //   this.view.render(this.model.data)
+      // })
       window.eventHub.on('select',(data)=>{
         this.model.data = data
         this.view.render(this.model.data)
       })
-      window.eventHub.on('newSong',()=>{
-        this.model.data = {}
+      window.eventHub.on('newSong',(data)=>{
+        if(this.model.data.id){
+          this.model.data = {}
+        }else{
+          Object.assign(this.model.data,data)
+        }
         this.view.render(this.model.data)
       })
     },

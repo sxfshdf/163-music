@@ -22,7 +22,7 @@
       this.view.render(this.model.data)
       this.view.active()
       this.bindEvents()
-      window.eventHub.on('upload',(data)=>{
+      window.eventHub.on('newSong',(data)=>{
         this.view.active()
       })
       window.eventHub.on('select',(data)=>{
@@ -31,7 +31,6 @@
     },
     bindEvents(){
       $(this.view.el).on('click',()=>{
-        this.view.active()
         window.eventHub.emit('newSong')
       })
     }
