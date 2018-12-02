@@ -6,6 +6,12 @@
     `,
     render(data){
       $(this.el).html(this.template)
+    },
+    active(){
+      $(this.el).addClass('active')
+    },
+    deactive(){
+      $(this.el).removeClass('active')
     }
   }
   let model = {}
@@ -14,13 +20,13 @@
       this.view = view
       this.model = model
       this.view.render(this.model.data)
-      this.active()
+      this.view.active()
       window.eventHub.on('upload',(data)=>{
-        this.active()
+        this.view.active()
       })
-    },
-    active(){
-      $(this.view.el).addClass('active')
+      window.eventHub.on('select',(data)=>{
+        this.view.deactive()
+      })
     }
   }
   controller.init(view,model)

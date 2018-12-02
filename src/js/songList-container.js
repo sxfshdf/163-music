@@ -46,14 +46,25 @@
       this.model = model
       this.view.render(this.model.data)
       this.bindEvents()
+      this.bindEventHub()
       this.getAllSongs()
     },
     bindEvents(){
       $(this.view.el).on('click','li',(e)=>{
         this.view.activeItem(e.currentTarget)
+        let songId = $(e.currentTarget).attr('data-songId')
+        let songs = this.model.data.songs
+        let data
+        for(let i=0; i<songs.length; i++){
+          if(songs[i].id === songId){
+            data = songs[i]
+            break
+          }
+        }
+        window.eventHub.emit('select',JSON.parse(JSON.stringify(data)))
       })
     },
-    bingEventHub(){
+    bindEventHub(){
       window.eventHub.on('upload',()=>{
         this.view.removeActive()
       })
