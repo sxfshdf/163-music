@@ -72,6 +72,9 @@
         this.model.data.songs.push(songData)
         this.view.render(this.model.data)
       })
+      window.eventHub.on('newSong',()=>{
+        this.view.removeActive()
+      })
     },
     getAllSongs(){
       this.model.find().then(()=>{
