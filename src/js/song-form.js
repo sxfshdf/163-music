@@ -24,25 +24,36 @@
     </form>
     `,
     render(data = {}) {
-      let placeHolders = ['name', 'url','singer','id']
+      let placeHolders = ['name', 'url', 'singer', 'id']
       let html = this.template
       placeHolders.map((string) => {
         html = html.replace(`__${string}__`, data[string] || '')
       })
       $(this.el).html(html)
-      if(data.id){
+      if (data.id) {
         $(this.el).prepend('<h1>编辑歌曲</h1>')
-      }else{
+      } else {
         $(this.el).prepend('<h1>新建歌曲</h1>')
       }
     },
-    reset(){
+    reset() {
       this.render({})
     }
   }
+
   let model = {
     data: {
       name: '', singer: '', url: '', id: ''
+    },
+    update(data){
+      var song = AV.Object.createWithoutData('Song', this.data.id );
+      song.set('name', data.name)
+      song.set('singer', data.singer)
+      song.set('url', data.url)
+      return song.save().then((response) => {
+        Object.assign(this.data, data)
+        return response
+      })
     },
     create(data) {
       // 声明类型
@@ -53,10 +64,10 @@
       song.set('name', data.name)
       song.set('singer', data.singer)
       song.set('url', data.url)
-      return song.save().then( (newSong) => {
-        let{id, attributes} = newSong
+      return song.save().then((newSong) => {
+        let { id, attributes } = newSong
         this.data = {
-          id, 
+          id,
           ...attributes
           // 相当于下面三行
           // name: attributes.name,
@@ -78,32 +89,55 @@
       //   this.model.data = data
       //   this.view.render(this.model.data)
       // })
-      window.eventHub.on('select',(data)=>{
+      window.eventHub.on('select', (data) => {
         this.model.data = data
         this.view.render(this.model.data)
       })
-      window.eventHub.on('newSong',(data)=>{
-        if(this.model.data.id){
+      window.eventHub.on('newSong', (data) => {
+        if (this.model.data.id) {
           this.model.data = {}
-        }else{
-          Object.assign(this.model.data,data)
+        } else {
+          Object.assign(this.model.data, data)
         }
         this.view.render(this.model.data)
+      })
+    },
+    
+    save() {
+      let need = 'name singer url'.split(' ')
+      let data = {}
+      need.map((string) => {
+        data[string] = $(this.view.el).find(`[name=${string}]`).val()
+      })
+      this.model.create(data)
+        .then(() => {
+          this.view.reset()
+          window.eventHub.emit('create', this.model.data)
+        })
+    },
+    update() {
+      let need = 'name singer url'.split(' ')
+      let data = {}
+      need.map((string) => {
+        data[string] = $(this.view.el).find(`[name=${string}]`).val()
+      })
+      this.model.update(data)
+      .then(() => {
+        window.eventHub.emit('update',JSON.parse(JSON.stringify(this.model.data)))
       })
     },
     bindEvents() {
       $(this.view.el).on('submit', 'form', (e) => {
         e.preventDefault()
-        let need = 'name singer url'.split(' ')
-        let data = {}
-        need.map((string) => {
-          data[string] = $(this.view.el).find(`[name=${string}]`).val()
-        })
-        this.model.create(data)
-          .then(()=>{
-            this.view.reset()
-            window.eventHub.emit('create',this.model.data)
-          })
+
+        if (this.model.data.id) {
+          this.update()
+        } else {
+          this.create()
+        }
+
+
+
       })
     }
   }
